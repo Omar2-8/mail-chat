@@ -1,0 +1,23 @@
+appId: com.mailchat.app
+productName: Mail Chat
+directories:
+  output: dist
+files:
+  - out/**/*
+  - resources/**/*
+  - package.json
+asar: true
+npmRebuild: false
+win:
+  icon: resources/icon.ico
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false
