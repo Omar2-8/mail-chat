@@ -24,7 +24,7 @@ Mail Chat is a Windows desktop app that reads your Microsoft 365 mailbox and sho
 
 Get the latest version from the [Releases page](https://github.com/Omar2-8/mail-chat/releases/latest).
 
-1. Download `Mail Chat Setup` for the installer, or `Mail Chat` for the portable version that runs without installing.
+1. Download `Mail.Chat.Setup.1.0.0.exe` for the installer, or `Mail.Chat.1.0.0.exe` for the portable version that runs without installing. GitHub shows dots where the files have spaces.
 2. Open the file. Windows may show "Windows protected your PC" because the app is not code signed yet. Select More info, then Run anyway.
 3. Choose the sign-in button that matches your account: work or school for Microsoft 365, personal for Outlook.com, Hotmail or Live.
 4. If your organization blocks the app, Mail Chat explains why and gives you a button that copies the details for your IT team. See [If sign-in fails](#if-sign-in-fails).
