@@ -20,6 +20,12 @@ Your Outlook inbox, but it's a group chat.
 
 Mail Chat is a Windows desktop app that reads your Microsoft 365 mailbox and shows every email thread as a group chat. Each thread becomes a group named after its subject, each email becomes a chat bubble, and typing in the box sends a real, threaded Reply All.
 
+<div align="center">
+
+<img src="docs/demo.gif" alt="Demo: opening a thread, the TL;DR card, and switching themes" width="820">
+
+</div>
+
 ## Download
 
 Get the latest version from the [Releases page](https://github.com/Omar2-8/mail-chat/releases/latest).
