@@ -27,7 +27,8 @@ Get the latest version from the [Releases page](https://github.com/Omar2-8/mail-
 1. Download `Mail.Chat.Setup.1.0.0.exe` for the installer, or `Mail.Chat.1.0.0.exe` for the portable version that runs without installing. GitHub shows dots where the files have spaces.
 2. Open the file. Windows may show "Windows protected your PC" because the app is not code signed yet. Select More info, then Run anyway.
 3. Choose the sign-in button that matches your account: work or school for Microsoft 365, personal for Outlook.com, Hotmail or Live.
-4. If your organization blocks the app, Mail Chat explains why and gives you a button that copies the details for your IT team. See [If sign-in fails](#if-sign-in-fails).
+4. The installed version updates itself: it checks for new releases at launch and offers a restart when one is ready. The portable version does not update itself.
+5. If your organization blocks the app, Mail Chat explains why and gives you a button that copies the details for your IT team. See [If sign-in fails](#if-sign-in-fails).
 
 ## The problem
 
@@ -198,6 +199,7 @@ The sync engine does a full sync every ten minutes and a quick sync every 30 sec
 
 ## Limitations
 
+- Auto update works for the installer build only, and starts with the first release after 1.0.0.
 - Windows only for now. The packaging and the notification, tray and login-item code target Windows.
 - Microsoft 365 and Outlook mailboxes only. Gmail and IMAP are not supported.
 - The AI helpers need the Claude Code CLI. Without it the TL;DR, Explain and Polish buttons report that it was not found.

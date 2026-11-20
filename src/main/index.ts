@@ -1,4 +1,5 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, nativeTheme, Notification, safeStorage, shell, Tray } from 'electron';
+import { startAutoUpdate } from './updater';
 import { randomUUID } from 'crypto';
 import { rmSync } from 'fs';
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
@@ -364,7 +365,10 @@ if (!app.requestSingleInstanceLock()) {
   });
   app
     .whenReady()
-    .then(() => instance.start())
+    .then(() => {
+      instance.start();
+      startAutoUpdate();
+    })
     .catch((error: unknown) => {
       dialog.showErrorBox(`${APP_NAME} could not start`, messageOf(error));
       app.exit(1);
