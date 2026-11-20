@@ -111,7 +111,17 @@ export function SignIn({ auth }: { auth: AuthState }) {
 
 function ErrorCard({ info, onDismiss }: { info: AuthErrorInfo; onDismiss: () => void }) {
   const [done, setDone] = useState(false);
-  useEffect(() => setDone(false), [info]);
+  const [linkDone, setLinkDone] = useState(false);
+  useEffect(() => {
+    setDone(false);
+    setLinkDone(false);
+  }, [info]);
+  const copyLink = () => {
+    void navigator.clipboard
+      .writeText(info.adminLink ?? '')
+      .then(() => setLinkDone(true))
+      .catch(() => setLinkDone(false));
+  };
   const copy = () => {
     void navigator.clipboard
       .writeText(info.details)
@@ -134,6 +144,11 @@ function ErrorCard({ info, onDismiss }: { info: AuthErrorInfo; onDismiss: () => 
         <button className="btn outline small" onClick={copy}>
           <Icon name={done ? 'check' : 'copy'} size={14} /> {done ? 'Copied' : 'Copy details for IT'}
         </button>
+        {info.adminLink && (
+          <button className="btn outline small" onClick={copyLink}>
+            <Icon name={linkDone ? 'check' : 'copy'} size={14} /> {linkDone ? 'Copied' : 'Copy admin approval link'}
+          </button>
+        )}
         <button className="btn ghost small" onClick={onDismiss}>
           Dismiss
         </button>

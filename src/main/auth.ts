@@ -215,6 +215,11 @@ function kindOf(account: AccountInfo): AccountKind {
   return account.tenantId?.toLowerCase() === CONSUMER_TENANT_ID ? 'personal' : 'work';
 }
 
+// One link that works for any organization: the admin signs in and approves the app for their whole tenant.
+function adminConsentUrl(): string {
+  return `https://login.microsoftonline.com/common/adminconsent?client_id=${encodeURIComponent(CLIENT_ID)}&redirect_uri=${encodeURIComponent('http://localhost')}`;
+}
+
 function clientIdFor(kind: AccountKind): string {
   return kind === 'personal' ? PERSONAL_CLIENT_ID : CLIENT_ID;
 }
@@ -335,7 +340,11 @@ export function explainAuthError(error: unknown, kind: AccountKind, flow: Flow =
           title: 'Sign-in did not work',
           hint: 'Try again, or try the other account button. If it keeps happening, send the details below to your IT team or the app developer.'
         });
-  return { title: picked.title, hint: picked.hint, code: facts.codes[0], details: detailsOf(facts, picked.title, kind, flow) };
+  const needsAdmin = kind === 'work' && /^(Your organization needs to approve|Mail Chat is not available)/.test(picked.title);
+  const adminLink = needsAdmin ? adminConsentUrl() : undefined;
+  const details = detailsOf(facts, picked.title, kind, flow) + (adminLink ? `
+Admin approval link (one click for an admin): ${adminLink}` : '');
+  return { title: picked.title, hint: picked.hint, code: facts.codes[0], details, adminLink };
 }
 
 function scopesFor(kind: AccountKind): string[] {

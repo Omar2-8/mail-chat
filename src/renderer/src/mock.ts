@@ -184,6 +184,7 @@ function mockAuthError(name: string | null): AuthErrorInfo | undefined {
         title: 'Your organization needs to approve Mail Chat',
         hint: 'Ask your IT admin to approve Mail Chat and send them the details below. This is not a problem with your password.',
         code: 'AADSTS65001',
+        adminLink: 'https://login.microsoftonline.com/common/adminconsent?client_id=c013199a-9f43-4212-b949-c8633efb8146&redirect_uri=http%3A%2F%2Flocalhost',
         details: details('AADSTS65001', 'The user or administrator has not consented to use the application.', 'work or school')
       };
     case 'blocked':

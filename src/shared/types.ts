@@ -120,6 +120,7 @@ export interface AuthErrorInfo {
   hint: string;
   code?: string;
   details: string;
+  adminLink?: string;
 }
 
 export interface AuthState {
