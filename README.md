@@ -7,7 +7,7 @@
 Your Outlook inbox, but it's a group chat.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-6d4aff.svg)](LICENSE)
-[![Platform: Windows](https://img.shields.io/badge/platform-Windows-0a84c6.svg)](#getting-started)
+[![Platform: Windows and macOS](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-0a84c6.svg)](#download)
 [![Built with Electron](https://img.shields.io/badge/built%20with-Electron-47848f.svg)](https://www.electronjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6.svg)](https://www.typescriptlang.org/)
 
@@ -18,7 +18,7 @@ Your Outlook inbox, but it's a group chat.
 
 </div>
 
-Mail Chat is a Windows desktop app that reads your Microsoft 365 mailbox and shows every email thread as a group chat. Each thread becomes a group named after its subject, each email becomes a chat bubble, and typing in the box sends a real, threaded Reply All.
+Mail Chat is a desktop app for Windows and Mac that reads your Microsoft 365 mailbox and shows every email thread as a group chat. Each thread becomes a group named after its subject, each email becomes a chat bubble, and typing in the box sends a real, threaded Reply All.
 
 <div align="center">
 
@@ -74,7 +74,7 @@ Each step in the app answers one of those frustrations.
 - Notification rules: pause for an hour, until tomorrow or until you resume, set quiet hours and quiet days, silence newsletters, automated senders, FYI mail, external senders or meeting invites, mute people or keywords, and mark VIPs that always get through.
 - Plain-text or HTML signatures, with a logo, or imported from Outlook. Logos go out as inline images so they show up in Outlook, Gmail and on phones.
 - Attachments open, save and drag in. Large files upload in chunks.
-- Seven themes, a tray icon, an unread badge on the taskbar, and Windows toast notifications.
+- Seven themes, a tray icon, an unread badge on the taskbar or dock, desktop notifications, and automatic updates on Windows.
 
 <div align="center">
 
@@ -101,7 +101,7 @@ Pick a theme in Settings, General. Match Windows, Light and Dark come with it, a
 
 ## Getting started
 
-You need Windows, Node.js 22.12 or newer and npm. The project is developed and tested on Windows 11 with Node.js 26.
+You need Node.js 22.12 or newer and npm. The project is developed and tested on Windows 11 with Node.js 26. The Mac build runs from the same code but has not been tested on real hardware.
 
 ### Try the interface without an account
 
@@ -131,7 +131,7 @@ The first window shows the sign-in screen. Choose Sign in with a work or school 
 npm run dist:dir
 ```
 
-This writes an unpacked app to `dist\win-unpacked`. Use `npm run dist` to produce the installer and the portable build.
+This writes an unpacked app to `dist\win-unpacked`. Use `npm run dist` to produce the installer and the portable build. On a Mac, `npm run dist:mac` builds the `.dmg` and `.zip`.
 
 ## Signing in
 
@@ -197,7 +197,7 @@ The sync engine does a full sync every ten minutes and a quick sync every 30 sec
 ## Where your data lives
 
 - Mail stays in Outlook. The app itself talks only to Microsoft Graph.
-- Settings and per-chat preferences are in `%APPDATA%\Mail Chat`.
+- Settings and per-chat preferences are in `%APPDATA%\Mail Chat` on Windows and `~/Library/Application Support/Mail Chat` on Mac.
 - The Microsoft token cache is encrypted with Electron `safeStorage`.
 - AI helpers pass the thread text to the Claude Code CLI installed on your PC, and that CLI sends it to Anthropic as it does for any prompt. Turn them off in Settings, AI helpers.
 
@@ -211,13 +211,15 @@ The sync engine does a full sync every ten minutes and a quick sync every 30 sec
 | `npm run typecheck` | TypeScript check |
 | `npm run dist:dir` | Unpacked Windows build in `dist` |
 | `npm run dist` | Windows installer and portable build |
+| `npm run dist:mac` | Mac `.dmg` and `.zip`, run on a Mac |
 | `npm run icons` | Regenerate the icons in `resources` |
 
 ## Limitations
 
 - Auto update works for the installer build only, and starts with the first release after 1.0.0.
-- The Mac build is new and unsigned, and I have not been able to test it on real hardware. Auto update works on Windows only for now. Outlook signatures can't be imported on Mac.
+- The Mac build is unsigned and untested on real hardware. On Mac, open it with right-click, Open the first time. Auto update and Outlook signature import work on Windows only.
 - Microsoft 365 and Outlook mailboxes only. Gmail and IMAP are not supported.
+- Work and school accounts may need a one-time admin approval, because the app's publisher is not verified yet. Personal accounts do not.
 - The AI helpers need the Claude Code CLI. Without it the TL;DR, Explain and Polish buttons report that it was not found.
 - The first `npm run dist` on Windows needs Developer Mode turned on, or an elevated terminal, because electron-builder unpacks its signing tools with symbolic links.
 
