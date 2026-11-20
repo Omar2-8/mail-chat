@@ -17,6 +17,12 @@ win:
     - target: portable
       arch:
         - x64
+mac:
+  icon: resources/icon-mac.png
+  category: public.app-category.productivity
+  target:
+    - dmg
+    - zip
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true

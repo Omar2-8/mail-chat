@@ -169,5 +169,6 @@ mkdirSync(outDir, { recursive: true });
 const icoImages = [16, 24, 32, 48, 64, 256].map((size) => ({ size, png: encodePng(size, render(size, sampleIcon)) }));
 writeResource('icon.png', icoImages.find(({ size }) => size === 256).png);
 writeResource('tray.png', icoImages.find(({ size }) => size === 32).png);
+writeResource('icon-mac.png', encodePng(1024, render(1024, sampleIcon)));
 writeResource('icon.ico', encodeIco(icoImages));
 writeResource('badge.png', encodePng(16, render(16, sampleBadge)));

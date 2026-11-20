@@ -3,9 +3,9 @@ import { autoUpdater } from 'electron-updater';
 
 const SIX_HOURS = 6 * 60 * 60 * 1000;
 
-// Updates only apply to the installed build. Dev runs and the portable exe cannot replace themselves.
+// Updates only apply to the installed Windows build (Mac updates need a signed app). Dev runs and the portable exe cannot replace themselves.
 export function startAutoUpdate(): void {
-  if (!app.isPackaged || process.env.PORTABLE_EXECUTABLE_DIR) return;
+  if (process.platform !== 'win32' || !app.isPackaged || process.env.PORTABLE_EXECUTABLE_DIR) return;
 
   autoUpdater.autoDownload = true;
   autoUpdater.autoInstallOnAppQuit = true;

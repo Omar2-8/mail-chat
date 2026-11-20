@@ -23,7 +23,8 @@
     "icons": "node scripts/make-icons.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "dist": "node scripts/build.mjs && electron-builder --win --x64 --publish never",
-    "dist:dir": "node scripts/build.mjs && electron-builder --win --x64 --dir"
+    "dist:dir": "node scripts/build.mjs && electron-builder --win --x64 --dir",
+    "dist:mac": "node scripts/build.mjs && electron-builder --mac --publish never"
   },
   "dependencies": {
     "@azure/msal-node": "^7.2.3",

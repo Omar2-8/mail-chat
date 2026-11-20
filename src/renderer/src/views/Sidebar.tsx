@@ -1,3 +1,4 @@
+import { MOD } from '../platform';
 import { memo, useMemo, useRef, useState } from 'react';
 import type { GroupSummary, Person, SyncState, ThreadSummary } from '../../../shared/types';
 import { Avatar, GroupAvatar } from '../components/Avatar';
@@ -130,7 +131,7 @@ export function Sidebar(props: SidebarProps) {
         <button className="icon-btn" onClick={props.onRefresh} title="Refresh (F5)">
           <Icon name="refresh" className={props.sync.phase === 'syncing' || props.sync.phase === 'loading' ? 'spin' : ''} />
         </button>
-        <button className="icon-btn accent" onClick={props.onNewChat} title="New chat (Ctrl+N)">
+        <button className="icon-btn accent" onClick={props.onNewChat} title={`New chat (${MOD}+N)`}>
           <Icon name="compose" />
         </button>
       </header>
@@ -250,7 +251,7 @@ export function Sidebar(props: SidebarProps) {
           align="start"
           onClose={() => setMeMenu(null)}
           items={[
-            { label: 'Settings', icon: 'sliders', onSelect: () => props.onSettings(), hint: 'Ctrl+,' },
+            { label: 'Settings', icon: 'sliders', onSelect: () => props.onSettings(), hint: `${MOD}+,` },
             { label: 'Signature', icon: 'compose', onSelect: () => props.onSettings('signature') },
             { label: 'Sign out', icon: 'logout', danger: true, onSelect: props.onSignOut }
           ]}

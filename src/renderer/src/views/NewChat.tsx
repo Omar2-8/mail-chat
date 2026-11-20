@@ -1,3 +1,4 @@
+import { MOD } from '../platform';
 import { useEffect, useRef, useState } from 'react';
 import type { OutgoingAttachment, Person, PersonSuggestion } from '../../../shared/types';
 import { api } from '../api';
@@ -184,9 +185,9 @@ export function NewChat({ onClose, onSent, onToast }: { onClose: () => void; onS
             dir="auto"
             value={text}
             onChange={(event) => setText(event.target.value)}
-            placeholder="Write it like a chat. Ctrl+Enter sends."
+            placeholder={`Write it like a chat. ${MOD}+Enter sends.`}
             onKeyDown={(event) => {
-              if (event.key === 'Enter' && event.ctrlKey) void send();
+              if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) void send();
             }}
           />
         </label>

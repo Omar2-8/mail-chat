@@ -1,3 +1,4 @@
+import { IS_MAC, MOD } from './platform';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AppSnapshot, ThreadSummary } from '../../shared/types';
 import { api, isMock } from './api';
@@ -265,7 +266,7 @@ function Welcome({ threads, onPick, onNew }: { threads: ThreadSummary[]; onPick:
           <Icon name="compose" size={16} /> New chat
         </button>
         <p className="shortcuts">
-          <kbd>Ctrl</kbd>+<kbd>N</kbd> new chat · <kbd>Ctrl</kbd>+<kbd>K</kbd> search · <kbd>Alt</kbd>+<kbd>↑↓</kbd> switch chats
+          <kbd>{MOD}</kbd>+<kbd>N</kbd> new chat · <kbd>{MOD}</kbd>+<kbd>K</kbd> search · <kbd>{IS_MAC ? '⌥' : 'Alt'}</kbd>+<kbd>↑↓</kbd> switch chats
         </p>
       </div>
     </section>

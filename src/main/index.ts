@@ -18,7 +18,7 @@ const APP_ID = 'com.mailchat.app';
 const APP_NAME = 'Mail Chat';
 const HIDDEN_FLAG = '--hidden';
 
-app.setAppUserModelId(APP_ID);
+if (process.platform === 'win32') app.setAppUserModelId(APP_ID);
 app.setName(APP_NAME);
 
 function resource(name: string): string {
@@ -59,7 +59,7 @@ class MailChatApp {
   private unread = 0;
 
   async start(): Promise<void> {
-    Menu.setApplicationMenu(null);
+    if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
     this.settings = await this.settingsFile.load();
     const prefs = await this.prefsFile.load();
     nativeTheme.themeSource = themeSource(this.settings.theme);
@@ -137,7 +137,10 @@ class MailChatApp {
   }
 
   private notify(notices: IncomingNotice[]): void {
-    if (this.window && !this.window.isFocused()) this.window.flashFrame(true);
+    if (this.window && !this.window.isFocused()) {
+      if (process.platform === 'darwin') app.dock?.bounce();
+      else this.window.flashFrame(true);
+    }
     if (!this.settings.notifications || !Notification.isSupported()) return;
     const visible = notices.slice(-3);
     for (const notice of visible) {
@@ -204,7 +207,7 @@ class MailChatApp {
   }
 
   private createTray(): void {
-    this.tray = new Tray(nativeImage.createFromPath(resource('tray.png')));
+    this.tray = new Tray(nativeImage.createFromPath(resource('tray.png')).resize({ width: 18, height: 18 }));
     this.tray.setToolTip(APP_NAME);
     this.tray.on('click', () => this.show());
     this.tray.setContextMenu(
@@ -223,7 +226,8 @@ class MailChatApp {
     const title = count > 0 ? `(${count}) ${APP_NAME}` : APP_NAME;
     this.window?.setTitle(title);
     this.tray?.setToolTip(count > 0 ? `${APP_NAME} · ${count} unread` : APP_NAME);
-    if (count > 0) this.window?.setOverlayIcon(nativeImage.createFromPath(resource('badge.png')), `${count} unread`);
+    if (process.platform === 'darwin') app.dock?.setBadge(count > 0 ? String(count) : '');
+    else if (count > 0) this.window?.setOverlayIcon(nativeImage.createFromPath(resource('badge.png')), `${count} unread`);
     else this.window?.setOverlayIcon(null, '');
   }
 
@@ -354,8 +358,9 @@ if (!app.requestSingleInstanceLock()) {
   app.on('second-instance', () => instance.show());
   app.on('before-quit', () => instance.markQuitting());
   app.on('window-all-closed', () => {
-    if (!instance.closesToTray()) app.quit();
+    if (!instance.closesToTray() && process.platform !== 'darwin') app.quit();
   });
+  app.on('activate', () => instance.show());
   app.on('will-quit', () => {
     try {
       rmSync(join(app.getPath('temp'), 'mail-chat'), { recursive: true, force: true });

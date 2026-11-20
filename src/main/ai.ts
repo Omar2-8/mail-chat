@@ -80,6 +80,7 @@ export class Ai {
 
 async function locate(preferred: string): Promise<string | undefined> {
   if (preferred.trim() && existsSync(preferred.trim())) return preferred.trim();
+  if (process.platform !== 'win32') return locateUnix();
   const local = join(homedir(), '.local', 'bin', 'claude.exe');
   if (existsSync(local)) return local;
   const found = await new Promise<string[]>((resolve) => {
@@ -88,6 +89,25 @@ async function locate(preferred: string): Promise<string | undefined> {
     });
   });
   return found.find((path) => /\.exe$/i.test(path)) ?? found.find((path) => /\.(cmd|bat)$/i.test(path));
+}
+
+// A desktop app on macOS does not inherit the shell PATH, so check the usual install spots, then ask a login shell.
+async function locateUnix(): Promise<string | undefined> {
+  const home = homedir();
+  const known = [
+    join(home, '.local', 'bin', 'claude'),
+    join(home, '.claude', 'local', 'claude'),
+    '/opt/homebrew/bin/claude',
+    '/usr/local/bin/claude',
+    join(home, '.npm-global', 'bin', 'claude')
+  ];
+  const hit = known.find((path) => existsSync(path));
+  if (hit) return hit;
+  const shell = process.env.SHELL || '/bin/zsh';
+  const found = await new Promise<string>((resolve) => {
+    execFile(shell, ['-lc', 'command -v claude'], { timeout: 5000 }, (error, stdout) => resolve(error ? '' : stdout.trim().split('\n').pop() ?? ''));
+  });
+  return found && existsSync(found) ? found : undefined;
 }
 
 function runCli(command: string, args: string[], input: string, cwd: string): Promise<string> {

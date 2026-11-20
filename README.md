@@ -30,11 +30,21 @@ Mail Chat is a Windows desktop app that reads your Microsoft 365 mailbox and sho
 
 Get the latest version from the [Releases page](https://github.com/Omar2-8/mail-chat/releases/latest).
 
+On Windows:
+
 1. Download `Mail.Chat.Setup.1.0.1.exe` for the installer, or `Mail.Chat.1.0.1.exe` for the portable version that runs without installing. GitHub shows dots where the files have spaces.
 2. Open the file. Windows may show "Windows protected your PC" because the app is not code signed yet. Select More info, then Run anyway.
-3. Choose the sign-in button that matches your account: work or school for Microsoft 365, personal for Outlook.com, Hotmail or Live.
-4. The installed version updates itself: it checks for new releases at launch and offers a restart when one is ready. The portable version does not update itself.
-5. If your organization blocks the app, Mail Chat explains why and gives you a button that copies the details for your IT team. See [If sign-in fails](#if-sign-in-fails).
+
+On a Mac:
+
+1. Download the `.dmg` for your chip: `arm64` for Apple silicon, the plain one for Intel.
+2. Drag Mail Chat to Applications, then right-click it and choose Open the first time. macOS blocks unsigned apps on a normal double-click. If it says the app is damaged, run `xattr -cr "/Applications/Mail Chat.app"` in Terminal.
+
+Then, on either system:
+
+1. Choose the sign-in button that matches your account: work or school for Microsoft 365, personal for Outlook.com, Hotmail or Live.
+2. The installed Windows version updates itself: it checks for new releases at launch and offers a restart when one is ready. The portable version does not update itself.
+3. If your organization blocks the app, Mail Chat explains why and gives you a button that copies the details for your IT team. See [If sign-in fails](#if-sign-in-fails).
 
 ## The problem
 
@@ -206,7 +216,7 @@ The sync engine does a full sync every ten minutes and a quick sync every 30 sec
 ## Limitations
 
 - Auto update works for the installer build only, and starts with the first release after 1.0.0.
-- Windows only for now. The packaging and the notification, tray and login-item code target Windows.
+- The Mac build is new and unsigned, and I have not been able to test it on real hardware. Auto update works on Windows only for now. Outlook signatures can't be imported on Mac.
 - Microsoft 365 and Outlook mailboxes only. Gmail and IMAP are not supported.
 - The AI helpers need the Claude Code CLI. Without it the TL;DR, Explain and Polish buttons report that it was not found.
 - The first `npm run dist` on Windows needs Developer Mode turned on, or an elevated terminal, because electron-builder unpacks its signing tools with symbolic links.

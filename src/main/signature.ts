@@ -64,6 +64,8 @@ function imageType(path: string, bytes: Buffer): string | undefined {
 }
 
 function signaturesDir(): string {
+  // Outlook for Mac keeps signatures in its own database, so only Windows has a folder to read.
+  if (process.platform !== 'win32') return '';
   return join(process.env.APPDATA ?? '', 'Microsoft', 'Signatures');
 }
 

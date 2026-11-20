@@ -1,3 +1,4 @@
+import { IS_MAC } from '../platform';
 import { useEffect, useMemo, useState } from 'react';
 import type { AiStatus } from '../../../shared/ipc';
 import { signatureHtml } from '../../../shared/signature';
@@ -140,7 +141,7 @@ function General({ draft, set, me, onSignOut }: { draft: Settings; set: Setter; 
       />
       <h4>App</h4>
       <Toggle label="Keep running in the tray when I close the window" value={draft.closeToTray} onChange={(value) => set('closeToTray', value)} />
-      <Toggle label="Start with Windows" value={draft.startWithWindows} onChange={(value) => set('startWithWindows', value)} />
+      <Toggle label={IS_MAC ? 'Start when I log in' : 'Start with Windows'} value={draft.startWithWindows} onChange={(value) => set('startWithWindows', value)} />
       <label className="field inline">
         <span>Theme</span>
         <select value={draft.theme} onChange={(event) => {
