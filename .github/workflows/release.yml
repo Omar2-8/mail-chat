@@ -25,8 +25,8 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/Mail Chat Setup *.exe
-            dist/Mail Chat *.exe
+            dist/Mail-Chat-Setup-*.exe
+            dist/Mail-Chat-?.*.exe
             dist/latest.yml
             dist/*.blockmap
           generate_release_notes: true
