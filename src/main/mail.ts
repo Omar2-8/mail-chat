@@ -31,7 +31,7 @@ const GROUP_MAX = 400;
 const ARCHIVE_MAX = 300;
 const DETAIL_TTL_MS = 20_000;
 const MAX_INLINE_IMAGES = 15;
-const MAX_INLINE_BYTES = 3 * 1024 * 1024;
+const MAX_INLINE_BYTES = 10 * 1024 * 1024;
 const HIDDEN_FOLDERS = ['deleteditems', 'junkemail', 'drafts', 'outbox', 'conversationhistory', 'syncissues', 'scheduled', 'searchfolders', 'clutter'];
 const HIDDEN_FOLDER_NAMES = /^(snoozed|rss feeds|rss subscriptions|sync issues|conversation history|notes|journal|tasks|calendar|contacts)$/i;
 const BANNER_PREVIEW =
@@ -256,11 +256,17 @@ export class MailService {
     }));
   }
 
-  async inlineImages(messageId: string): Promise<Record<string, string>> {
+  async inlineImages(messageId: string, wanted: string[] = []): Promise<Record<string, string>> {
+    const plain = (id: string) => id.replace(/^<|>$/g, '');
+    const wantIds = new Set(wanted.map(plain));
+    const wantNames = new Set(wanted.map((id) => plain(id).split('@')[0]));
+    // Replies carry every picture from the whole chain, so the ones this message shows go first.
+    const rank = (item: { name?: string | null; contentId?: string | null }) => ((item.contentId && wantIds.has(plain(item.contentId))) || (item.name && wantNames.has(item.name)) ? 0 : 1);
     const items = (await this.graph.attachments(messageId)).filter(
       // Some senders attach inline pictures without the inline flag, so any small image can be a cid target.
       (item) => (item.contentType ?? '').startsWith('image/') && (item.size ?? 0) <= MAX_INLINE_BYTES
     );
+    items.sort((a, b) => rank(a) - rank(b));
     const images: Record<string, string> = {};
     for (const item of items.slice(0, MAX_INLINE_IMAGES)) {
       const full = await this.graph.attachment(messageId, item.id).catch(() => undefined);

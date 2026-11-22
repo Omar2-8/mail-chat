@@ -233,7 +233,7 @@ export class Graph {
   async attachments(messageId: string): Promise<GraphAttachment[]> {
     const page = await this.json<Page<GraphAttachment>>(
       'GET',
-      `/me/messages/${enc(messageId)}/attachments?$select=id,name,size,contentType,isInline`
+      `/me/messages/${enc(messageId)}/attachments?$select=id,name,size,contentType,isInline,contentId`
     );
     return page.value ?? [];
   }

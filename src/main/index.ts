@@ -298,7 +298,9 @@ class MailChatApp {
     handle(IPC.setMuted, (threadId: string, on: boolean) => this.mail.setMuted(threadId, on));
     handle(IPC.setArchived, (threadId: string, on: boolean) => this.mail.setArchived(threadId, on));
     handle(IPC.attachments, (messageId: string) => this.mail.attachments(messageId));
-    handle(IPC.inlineImages, (messageId: string) => this.mail.inlineImages(messageId));
+    handle(IPC.inlineImages, (messageId: string, wanted: unknown) =>
+      this.mail.inlineImages(messageId, Array.isArray(wanted) ? wanted.filter((id): id is string => typeof id === 'string').slice(0, 50) : [])
+    );
     handle(IPC.openAttachment, async (messageId: string, attachmentId: string, name: string) => {
       const path = await this.downloadAttachment(messageId, attachmentId, name);
       const failure = await shell.openPath(path);

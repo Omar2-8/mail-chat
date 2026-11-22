@@ -13,21 +13,22 @@ const COLLAPSE_AT = 460;
 const inlineCache = new Map<string, Promise<Record<string, string>>>();
 const attachmentCache = new Map<string, Promise<AttachmentInfo[]>>();
 
-function inlineImages(messageId: string): Promise<Record<string, string>> {
-  let pending = inlineCache.get(messageId);
+function inlineImages(messageId: string, cids: string[]): Promise<Record<string, string>> {
+  const key = `${messageId}|${cids.join(',')}`;
+  let pending = inlineCache.get(key);
   if (!pending) {
     // Do not keep a failed or empty lookup, so the next render can try again.
     pending = api
-      .inlineImages(messageId)
+      .inlineImages(messageId, cids)
       .then((found) => {
-        if (Object.keys(found).length === 0) inlineCache.delete(messageId);
+        if (Object.keys(found).length === 0) inlineCache.delete(key);
         return found;
       })
       .catch(() => {
-        inlineCache.delete(messageId);
+        inlineCache.delete(key);
         return {} as Record<string, string>;
       });
-    inlineCache.set(messageId, pending);
+    inlineCache.set(key, pending);
   }
   return pending;
 }
@@ -93,7 +94,7 @@ export const MessageBubble = memo(function MessageBubble({ message, first, last,
   useEffect(() => {
     if (!cleaned.hasCid || Object.keys(images).length > 0) return;
     let alive = true;
-    void inlineImages(message.id).then((found) => alive && Object.keys(found).length > 0 && setImages(found));
+    void inlineImages(message.id, cleaned.cids).then((found) => alive && Object.keys(found).length > 0 && setImages(found));
     return () => {
       alive = false;
     };

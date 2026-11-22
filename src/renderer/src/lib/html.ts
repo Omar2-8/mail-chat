@@ -108,10 +108,12 @@ function collapseBlankRuns(root: Element): void {
 export interface CleanResult {
   html: string;
   hasCid: boolean;
+  cids: string[];
 }
 
 export function cleanEmailHtml(input: string, inlineImages: Record<string, string> = {}, options: { trim?: boolean } = {}): CleanResult {
   let hasCid = false;
+  const cids: string[] = [];
   const fragment = DOMPurify.sanitize(input, {
     ALLOWED_TAGS,
     ALLOWED_ATTR,
@@ -141,6 +143,7 @@ export function cleanEmailHtml(input: string, inlineImages: Record<string, strin
       if (/^cid:/i.test(src)) {
         hasCid = true;
         const id = src.slice(4).replace(/^<|>$/g, '');
+        cids.push(id);
         const resolved = inlineImages[id] ?? inlineImages[`name:${id.split('@')[0]}`];
         if (resolved) element.setAttribute('src', resolved);
         else element.classList.add('img-pending');
@@ -168,7 +171,7 @@ export function cleanEmailHtml(input: string, inlineImages: Record<string, strin
   if (options.trim) chatify(root);
   collapseBlankRuns(root);
   trimEdges(root);
-  return { html: root.innerHTML, hasCid };
+  return { html: root.innerHTML, hasCid, cids };
 }
 
 export function markdownToHtml(markdown: string): string {

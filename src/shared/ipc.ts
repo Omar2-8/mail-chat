@@ -79,7 +79,7 @@ export interface MailChatApi {
   setMuted(threadId: string, muted: boolean): Promise<void>;
   setArchived(threadId: string, archived: boolean): Promise<void>;
   attachments(messageId: string): Promise<AttachmentInfo[]>;
-  inlineImages(messageId: string): Promise<Record<string, string>>;
+  inlineImages(messageId: string, wanted?: string[]): Promise<Record<string, string>>;
   openAttachment(messageId: string, attachmentId: string, name: string): Promise<void>;
   saveAttachment(messageId: string, attachmentId: string, name: string): Promise<void>;
   sendReply(request: SendReplyRequest): Promise<SendResult>;
