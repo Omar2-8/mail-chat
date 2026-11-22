@@ -1,5 +1,5 @@
 import type { AiStatus, MailChatApi } from '../../shared/ipc';
-import type { AppEvent, AppSnapshot, AuthErrorInfo, ChatMessage, Person, Settings, ThreadDetail, ThreadSummary } from '../../shared/types';
+import type { AppEvent, AppSnapshot, AuthErrorInfo, OrgConfig, ChatMessage, Person, Settings, ThreadDetail, ThreadSummary } from '../../shared/types';
 
 const ME: Person = { name: 'Alex Morgan', email: 'alex@example.com' };
 const P = {
@@ -219,6 +219,7 @@ export function createMockApi(): MailChatApi {
   let settings = { ...SETTINGS };
   let signedIn = !new URLSearchParams(location.search).has('signin');
   let busy = false;
+  let mockOrg: OrgConfig = { clientId: '', tenant: '', email: '' };
   let errorInfo = signedIn ? undefined : mockAuthError(new URLSearchParams(location.search).get('error'));
 
   const snapshot = (): AppSnapshot => ({
@@ -293,6 +294,16 @@ export function createMockApi(): MailChatApi {
       changed();
     },
     signInWithCode: async (_kind) => undefined,
+    orgGet: async () => mockOrg,
+    orgSet: async (email, clientId) => {
+      if (!email && !clientId) {
+        mockOrg = { clientId: '', tenant: '', email: '' };
+        return { ok: true, org: mockOrg };
+      }
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clientId.trim())) return { ok: false, error: 'A client ID looks like 11111111-2222-3333-4444-555555555555.', org: mockOrg };
+      mockOrg = { clientId: clientId.trim(), tenant: 'preview-tenant', email };
+      return { ok: true, org: mockOrg };
+    },
     cancelSignIn: async () => {
       errorInfo = undefined;
       busy = false;

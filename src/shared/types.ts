@@ -123,6 +123,18 @@ export interface AuthErrorInfo {
   adminLink?: string;
 }
 
+export interface OrgConfig {
+  clientId: string;
+  tenant: string;
+  email: string;
+}
+
+export interface OrgResult {
+  ok: boolean;
+  error?: string;
+  org: OrgConfig;
+}
+
 export interface AuthState {
   signedIn: boolean;
   busy: boolean;

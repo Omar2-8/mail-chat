@@ -1,5 +1,6 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, nativeTheme, Notification, safeStorage, shell, Tray } from 'electron';
 import { startAutoUpdate } from './updater';
+import { loadOrg, saveOrg } from './org';
 import { randomUUID } from 'crypto';
 import { rmSync } from 'fs';
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
@@ -57,6 +58,7 @@ class MailChatApp {
   private ai!: Ai;
   private emitTimer?: ReturnType<typeof setTimeout>;
   private unread = 0;
+  private readonly orgPath = join(app.getPath('userData'), 'org.json');
 
   async start(): Promise<void> {
     if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
@@ -71,6 +73,7 @@ class MailChatApp {
         await shell.openExternal(url);
       }
     });
+    this.auth.setOrg(await loadOrg(this.orgPath));
     const graph = new Graph(
       () => this.auth.token(),
       () => this.auth.state.accountKind === 'personal'
@@ -276,6 +279,12 @@ class MailChatApp {
       void this.auth.signInWithCode(kind === 'personal' ? 'personal' : 'work');
     });
     handle(IPC.cancelSignIn, () => this.auth.cancel());
+    handle(IPC.orgGet, () => loadOrg(this.orgPath));
+    handle(IPC.orgSet, async (email: unknown, clientId: unknown) => {
+      const result = await saveOrg(this.orgPath, email, clientId);
+      if (result.ok) this.auth.setOrg(result.org);
+      return result;
+    });
     handle(IPC.signOut, async () => {
       await this.auth.signOut();
       this.mail.stop();

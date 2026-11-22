@@ -6,6 +6,8 @@ import type {
   AppSnapshot,
   AttachmentInfo,
   NewThreadRequest,
+  OrgConfig,
+  OrgResult,
   OutgoingAttachment,
   OutlookSignature,
   PickedImage,
@@ -21,6 +23,8 @@ export const IPC = {
   signIn: 'auth:sign-in',
   signInWithCode: 'auth:sign-in-code',
   cancelSignIn: 'auth:cancel',
+  orgGet: 'auth:org-get',
+  orgSet: 'auth:org-set',
   signOut: 'auth:sign-out',
   refresh: 'mail:refresh',
   thread: 'mail:thread',
@@ -64,6 +68,8 @@ export interface MailChatApi {
   signIn(kind: AccountKind): Promise<void>;
   signInWithCode(kind: AccountKind): Promise<void>;
   cancelSignIn(): Promise<void>;
+  orgGet(): Promise<OrgConfig>;
+  orgSet(email: string, clientId: string): Promise<OrgResult>;
   signOut(): Promise<void>;
   refresh(): Promise<void>;
   thread(threadId: string): Promise<ThreadDetail>;

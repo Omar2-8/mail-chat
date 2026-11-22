@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import type { AccountKind, AuthErrorInfo, AuthState } from '../../../shared/types';
+import type { AccountKind, AuthErrorInfo, AuthState, OrgConfig } from '../../../shared/types';
 import { api } from '../api';
 import { Icon } from '../components/Icon';
+import { Modal } from '../components/Overlay';
 
 function useCountdown(expiresAt?: string): string {
   const [now, setNow] = useState(Date.now());
@@ -19,12 +20,23 @@ export function SignIn({ auth }: { auth: AuthState }) {
   const countdown = useCountdown(auth.device?.expiresAt);
   const [copied, setCopied] = useState(false);
   const [kind, setKind] = useState<AccountKind>('work');
+  const [orgOpen, setOrgOpen] = useState(false);
+  const [org, setOrg] = useState<OrgConfig>();
+  useEffect(() => {
+    void api.orgGet().then(setOrg).catch(() => undefined);
+  }, [orgOpen]);
   const start = (next: AccountKind) => {
     setKind(next);
     void api.signIn(next);
   };
   return (
     <div className="signin">
+      {!auth.busy && !auth.device && (
+        <button className={`signin-corner${org?.clientId ? ' on' : ''}`} onClick={() => setOrgOpen(true)} title="Use my organization's app" aria-label="Use my organization's app">
+          <Icon name="sliders" size={15} />
+        </button>
+      )}
+      {orgOpen && <OrgDialog onClose={() => setOrgOpen(false)} />}
       <div className="signin-card">
         <div className="signin-bubbles" aria-hidden="true">
           <div className="sb sb-in">RE: RE: FW: Q3 sync??</div>
@@ -106,6 +118,69 @@ export function SignIn({ auth }: { auth: AuthState }) {
         </p>
       </div>
     </div>
+  );
+}
+
+function OrgDialog({ onClose }: { onClose: () => void }) {
+  const [email, setEmail] = useState('');
+  const [clientId, setClientId] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    void api.orgGet().then((org) => {
+      setEmail(org.email);
+      setClientId(org.clientId);
+    });
+  }, []);
+  const save = (mail: string, id: string) => {
+    setBusy(true);
+    setError('');
+    void api
+      .orgSet(mail, id)
+      .then((result) => {
+        if (result.ok) onClose();
+        else setError(result.error ?? 'Could not save.');
+      })
+      .catch(() => setError('Could not save. Try again.'))
+      .finally(() => setBusy(false));
+  };
+  return (
+    <Modal
+      title="Use my organization's app"
+      onClose={onClose}
+      footer={
+        <>
+          {clientId && (
+            <button className="btn ghost" disabled={busy} onClick={() => save('', '')}>
+              Reset
+            </button>
+          )}
+          <button className="btn ghost" onClick={onClose}>
+            Cancel
+          </button>
+          <button className="btn primary" disabled={busy} onClick={() => save(email, clientId)}>
+            Save
+          </button>
+        </>
+      }
+    >
+      <p className="muted">
+        If your organization asks for admin approval, your IT team can give you a client ID for Mail Chat. Enter it here and the work sign-in button uses it, so the approval screen is skipped.
+      </p>
+      <label className="field">
+        <span>Work email</span>
+        <input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="name@company.com" autoFocus />
+      </label>
+      <label className="field">
+        <span>Client ID</span>
+        <input value={clientId} onChange={(event) => setClientId(event.target.value)} placeholder="11111111-2222-3333-4444-555555555555" spellCheck={false} />
+      </label>
+      {error && (
+        <div className="signin-error">
+          <Icon name="alert" size={16} /> {error}
+        </div>
+      )}
+    </Modal>
   );
 }
 

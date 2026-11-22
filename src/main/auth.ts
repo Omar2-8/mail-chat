@@ -4,7 +4,7 @@ import { dirname } from 'path';
 import { InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
 import type { AccountInfo, AuthenticationResult, DeviceCodeRequest, ICachePlugin } from '@azure/msal-node';
 import { app as electronApp } from 'electron';
-import type { AccountKind, AuthErrorInfo, AuthState } from '../shared/types';
+import type { AccountKind, AuthErrorInfo, AuthState, OrgConfig } from '../shared/types';
 
 const DEFAULT_CLIENT_ID = 'c013199a-9f43-4212-b949-c8633efb8146';
 export const TENANT_ID = process.env.MAIL_CHAT_TENANT_ID?.trim() || 'organizations';
@@ -33,6 +33,9 @@ const ERROR_PAGE = `<!doctype html><html><head><meta charset="utf-8"><title>Mail
 <body style="font-family:Segoe UI,system-ui,sans-serif;display:grid;place-items:center;height:100vh;margin:0;background:#101018;color:#fff">
 <div style="text-align:center"><div style="font-size:56px">😵</div><h1 style="font-weight:600">Sign-in failed</h1><p style="opacity:.7">Go back to Mail Chat and try "Use a code instead".</p></div></body></html>`;
 
+// A saved organization app (client ID and tenant) replaces the built-in one for work sign-in only.
+let orgOverride: { clientId?: string; tenant?: string } = {};
+
 export interface AuthOptions {
   cachePath: string;
   protect: (plain: string) => Buffer;
@@ -48,6 +51,11 @@ export class Auth {
   private attempt = 0;
 
   constructor(private readonly opts: AuthOptions) {}
+
+  setOrg(org: OrgConfig): void {
+    orgOverride = { clientId: org.clientId || undefined, tenant: org.tenant || undefined };
+    this.apps.clear();
+  }
 
   get state(): AuthState {
     return this.current;
@@ -217,15 +225,15 @@ function kindOf(account: AccountInfo): AccountKind {
 
 // One link that works for any organization: the admin signs in and approves the app for their whole tenant.
 function adminConsentUrl(): string {
-  return `https://login.microsoftonline.com/common/adminconsent?client_id=${encodeURIComponent(CLIENT_ID)}&redirect_uri=${encodeURIComponent('http://localhost')}`;
+  return `https://login.microsoftonline.com/common/adminconsent?client_id=${encodeURIComponent(clientIdFor('work'))}&redirect_uri=${encodeURIComponent('http://localhost')}`;
 }
 
 function clientIdFor(kind: AccountKind): string {
-  return kind === 'personal' ? PERSONAL_CLIENT_ID : CLIENT_ID;
+  return kind === 'personal' ? PERSONAL_CLIENT_ID : orgOverride.clientId || CLIENT_ID;
 }
 
 function authorityFor(kind: AccountKind): string {
-  return `https://login.microsoftonline.com/${kind === 'personal' ? 'consumers' : TENANT_ID}`;
+  return `https://login.microsoftonline.com/${kind === 'personal' ? 'consumers' : orgOverride.tenant || TENANT_ID}`;
 }
 
 type Flow = 'browser' | 'code' | 'silent';

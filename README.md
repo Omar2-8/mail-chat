@@ -153,7 +153,7 @@ $env:MAIL_CHAT_TENANT_ID = "your-tenant-id"
 npm run dev
 ```
 
-`MAIL_CHAT_TENANT_ID` is optional and defaults to `organizations`. It applies to work and school sign-in only. `MAIL_CHAT_PERSONAL_CLIENT_ID` sets a separate client ID for personal sign-in and falls back to `MAIL_CHAT_CLIENT_ID`.
+You can also skip the environment variables: the small slider icon in the top-right corner of the sign-in screen opens a dialog where you enter your work email and the client ID. Mail Chat finds your tenant from the email and the work button uses your app from then on. `MAIL_CHAT_TENANT_ID` is optional and defaults to `organizations`. It applies to work and school sign-in only. `MAIL_CHAT_PERSONAL_CLIENT_ID` sets a separate client ID for personal sign-in and falls back to `MAIL_CHAT_CLIENT_ID`.
 
 ### If sign-in fails
 

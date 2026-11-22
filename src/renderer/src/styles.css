@@ -2993,3 +2993,34 @@ kbd {
   background: transparent;
   min-width: 0;
 }
+
+.signin {
+  position: relative;
+}
+
+.signin-corner {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-3, var(--text-2));
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.signin-corner:hover,
+.signin-corner.on {
+  opacity: 1;
+  border-color: var(--border);
+  background: var(--surface-2);
+}
+
+.signin-corner.on {
+  color: var(--accent, var(--text));
+}
