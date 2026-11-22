@@ -258,7 +258,8 @@ export class MailService {
 
   async inlineImages(messageId: string): Promise<Record<string, string>> {
     const items = (await this.graph.attachments(messageId)).filter(
-      (item) => item.isInline && (item.contentType ?? '').startsWith('image/') && (item.size ?? 0) <= MAX_INLINE_BYTES
+      // Some senders attach inline pictures without the inline flag, so any small image can be a cid target.
+      (item) => (item.contentType ?? '').startsWith('image/') && (item.size ?? 0) <= MAX_INLINE_BYTES
     );
     const images: Record<string, string> = {};
     for (const item of items.slice(0, MAX_INLINE_IMAGES)) {

@@ -16,7 +16,17 @@ const attachmentCache = new Map<string, Promise<AttachmentInfo[]>>();
 function inlineImages(messageId: string): Promise<Record<string, string>> {
   let pending = inlineCache.get(messageId);
   if (!pending) {
-    pending = api.inlineImages(messageId).catch(() => ({}));
+    // Do not keep a failed or empty lookup, so the next render can try again.
+    pending = api
+      .inlineImages(messageId)
+      .then((found) => {
+        if (Object.keys(found).length === 0) inlineCache.delete(messageId);
+        return found;
+      })
+      .catch(() => {
+        inlineCache.delete(messageId);
+        return {} as Record<string, string>;
+      });
     inlineCache.set(messageId, pending);
   }
   return pending;
