@@ -270,7 +270,16 @@ export function ThreadView({ summary, threadId, version, me, mePerson, defaultMo
                 </div>
               )}
               {ai.state === 'done' && ai.text && <div className="ai-text" dir="auto" dangerouslySetInnerHTML={{ __html: markdownToHtml(ai.text) }} />}
-              {ai.state === 'error' && <div className="ai-error">{ai.text}</div>}
+              {ai.state === 'error' && (
+                <div className="ai-error">
+                  {ai.text}
+                  {/not signed in/i.test(ai.text ?? '') && (
+                    <button className="btn outline small ai-login" onClick={() => void api.aiLogin()}>
+                      Sign in to Claude
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           )}
           <div className="messages-wrap">

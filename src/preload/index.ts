@@ -31,6 +31,7 @@ const api: MailChatApi = {
   describeFiles: (paths) => invoke(IPC.describeFiles, paths),
   pathForFile: (file) => webUtils.getPathForFile(file),
   openExternal: (url) => invoke(IPC.openExternal, url),
+  aiLogin: () => invoke(IPC.aiLogin),
   saveSettings: (settings) => invoke(IPC.saveSettings, settings),
   ai: (request) => invoke(IPC.ai, request),
   aiStatus: () => invoke(IPC.aiStatus),

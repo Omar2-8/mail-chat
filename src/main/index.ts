@@ -325,7 +325,8 @@ class MailChatApp {
       return result.canceled ? [] : this.describe(result.filePaths);
     });
     handle(IPC.describeFiles, (paths: string[]) => this.describe(paths));
-    handle(IPC.openExternal, async (url: string) => {
+    handle(IPC.aiLogin, () => this.ai.login());
+    handle(IPC.openExternal,async (url: string) => {
       if (isSafeExternal(url)) await shell.openExternal(url);
     });
     handle(IPC.saveSettings, (patch: Partial<Settings>) => this.saveSettings(patch));

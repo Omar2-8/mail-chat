@@ -44,6 +44,7 @@ export const IPC = {
   pickFiles: 'app:pick-files',
   describeFiles: 'app:describe-files',
   openExternal: 'app:open-external',
+  aiLogin: 'ai:login',
   saveSettings: 'app:save-settings',
   ai: 'ai:run',
   aiStatus: 'ai:status',
@@ -90,6 +91,7 @@ export interface MailChatApi {
   describeFiles(paths: string[]): Promise<OutgoingAttachment[]>;
   pathForFile(file: File): string;
   openExternal(url: string): Promise<void>;
+  aiLogin(): Promise<{ ok: boolean; error?: string }>;
   saveSettings(settings: Partial<Settings>): Promise<Settings>;
   ai(request: AiRequest): Promise<AiResult>;
   aiStatus(): Promise<AiStatus>;

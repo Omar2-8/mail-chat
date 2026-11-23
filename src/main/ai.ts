@@ -66,7 +66,26 @@ export class Ai {
     }
   }
 
-  private claudePath(): Promise<string | undefined> {
+  // Open a terminal window running Claude Code so the user can finish signing in.
+  async login(): Promise<{ ok: boolean; error?: string }> {
+    const command = await this.claudePath();
+    if (!command) return { ok: false, error: 'Claude Code CLI not found. Install it or set its path in Settings.' };
+    try {
+      if (process.platform === 'win32') {
+        spawn(`start "Claude sign in" cmd /k ""${command}""`, { shell: true, detached: true, stdio: 'ignore', windowsHide: false }).unref();
+      } else if (process.platform === 'darwin') {
+        const script = `tell application "Terminal" to do script "${command.replace(/(["\\])/g, '\\$1')}"`;
+        execFile('osascript', ['-e', script, '-e', 'tell application "Terminal" to activate']);
+      } else {
+        return { ok: false, error: 'Open a terminal and run: claude' };
+      }
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : String(error) };
+    }
+  }
+
+  private claudePath():Promise<string | undefined> {
     if (!this.located) {
       const pending = locate(this.settings().claudePath);
       this.located = pending;
@@ -149,7 +168,7 @@ function runCli(command: string, args: string[], input: string, cwd: string): Pr
 // Turn raw CLI failures into a next step a non-technical user can follow.
 function friendlyError(message: string): string {
   if (/not logged in|please run \/login|\/login|invalid api key|authentication|unauthorized|\b401\b|oauth|credit balance|sign in/i.test(message)) {
-    return 'Claude Code is installed but not signed in. Open a terminal (Command Prompt or PowerShell), type claude, press Enter, finish the login (or type /login), then try again.';
+    return 'Claude Code is installed but not signed in. Open a terminal (Command Prompt or PowerShell), type claude, press Enter and finish the login, then try again.';
   }
   if (/unknown (option|argument)|unrecognized (option|argument)|invalid (option|argument)|unexpected argument/i.test(message)) {
     return 'Your Claude Code is out of date. Open a terminal, run: claude update, then try again.';

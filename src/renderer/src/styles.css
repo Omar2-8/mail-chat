@@ -3024,3 +3024,8 @@ kbd {
 .signin-corner.on {
   color: var(--accent, var(--text));
 }
+
+.ai-login {
+  display: flex;
+  margin-top: 8px;
+}

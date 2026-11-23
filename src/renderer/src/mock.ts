@@ -381,7 +381,8 @@ export function createMockApi(): MailChatApi {
     pickFiles: async () => [{ path: 'C:\\Users\\you\\Documents\\rollback.sql', name: 'rollback.sql', size: 4_812 }],
     describeFiles: async (paths) => paths.map((path) => ({ path, name: path.split(/[\\/]/).pop() ?? path, size: 1000 })),
     pathForFile: (file) => file.name,
-    openExternal: async (url) => {
+    aiLogin: async () => ({ ok: true }),
+  openExternal: async (url) => {
       window.open(url, '_blank', 'noopener');
     },
     saveSettings: async (values) => {
