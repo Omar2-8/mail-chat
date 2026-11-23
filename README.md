@@ -32,7 +32,7 @@ Get the latest version from the [Releases page](https://github.com/Omar2-8/mail-
 
 On Windows:
 
-1. Download `Mail-Chat-Setup-1.0.5.exe` for the installer, or `Mail-Chat-1.0.5.exe` for the portable version that runs without installing.
+1. Download `Mail-Chat-Setup-1.0.6.exe` for the installer, or `Mail-Chat-1.0.6.exe` for the portable version that runs without installing.
 2. Open the file. Windows may show "Windows protected your PC" because the app is not code signed yet. Select More info, then Run anyway.
 
 On a Mac:
