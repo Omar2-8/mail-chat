@@ -1,5 +1,5 @@
 import { MOD } from '../platform';
-import { memo, useMemo, useRef, useState } from 'react';
+import { Fragment, memo, useMemo, useRef, useState } from 'react';
 import type { GroupSummary, Person, SyncState, ThreadSummary } from '../../../shared/types';
 import { Avatar, GroupAvatar } from '../components/Avatar';
 import { Icon } from '../components/Icon';
@@ -204,16 +204,22 @@ export function Sidebar(props: SidebarProps) {
             <div className="section-label static">Chats</div>
           </div>
         )}
-        {list.map((thread) => (
-          <ThreadRow
-            key={thread.id}
-            thread={thread}
-            selected={thread.id === props.selectedId}
-            showGroup={!openGroup}
-            onSelect={props.onSelect}
-            onContext={(x, y) => setContext({ thread, x, y })}
-          />
-        ))}
+        {list.map((thread, index) => {
+          const bucket = dateBucket(thread);
+          const heading = index === 0 || bucket !== dateBucket(list[index - 1]) ? bucket : '';
+          return (
+            <Fragment key={thread.id}>
+              {heading && <div className="section-label static date-label">{heading}</div>}
+              <ThreadRow
+                thread={thread}
+                selected={thread.id === props.selectedId}
+                showGroup={!openGroup}
+                onSelect={props.onSelect}
+                onContext={(x, y) => setContext({ thread, x, y })}
+              />
+            </Fragment>
+          );
+        })}
         {list.length === 0 && <EmptyList filter={filter} query={query} loading={props.sync.phase === 'loading'} />}
       </div>
       <footer className="side-foot">
@@ -373,6 +379,20 @@ function GroupRow({ group, onOpen, onContext }: { group: GroupSummary; onOpen: (
       </div>
     </div>
   );
+}
+
+// Sidebar date headings: pinned chats first, then by how recent the last activity is.
+function dateBucket(thread: ThreadSummary): string {
+  if (thread.pinned) return 'Pinned';
+  const date = new Date(thread.lastActivity);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const days = Math.round((start.getTime() - new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()) / 86_400_000);
+  if (days <= 0) return 'Today';
+  if (days === 1) return 'Yesterday';
+  if (days < 7) return 'This week';
+  if (days < 31) return 'This month';
+  return 'Older';
 }
 
 const ThreadRow = memo(function ThreadRow({
