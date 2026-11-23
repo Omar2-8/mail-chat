@@ -60,7 +60,7 @@ export class Ai {
       const text = await runCli(command, args, userPrompt(input), this.workDir);
       return text.trim() ? { ok: true, text: text.trim() } : { ok: false, error: 'Claude returned nothing.' };
     } catch (error) {
-      return { ok: false, error: error instanceof Error ? error.message : String(error) };
+      return { ok: false, error: friendlyError(error instanceof Error ? error.message : String(error)) };
     } finally {
       await rm(promptFile, { force: true });
     }
@@ -144,6 +144,23 @@ function runCli(command: string, args: string[], input: string, cwd: string): Pr
     });
     child.stdin.end(input, 'utf8');
   });
+}
+
+// Turn raw CLI failures into a next step a non-technical user can follow.
+function friendlyError(message: string): string {
+  if (/not logged in|please run \/login|\/login|invalid api key|authentication|unauthorized|\b401\b|oauth|credit balance|sign in/i.test(message)) {
+    return 'Claude Code is installed but not signed in. Open a terminal (Command Prompt or PowerShell), type claude, press Enter, finish the login (or type /login), then try again.';
+  }
+  if (/unknown (option|argument)|unrecognized (option|argument)|invalid (option|argument)|unexpected argument/i.test(message)) {
+    return 'Your Claude Code is out of date. Open a terminal, run: claude update, then try again.';
+  }
+  if (/ENOENT|EACCES|EPERM|not recognized as an internal/i.test(message)) {
+    return 'Mail Chat found Claude Code but could not start it. Reinstall Claude Code, or set its path in Settings.';
+  }
+  if (/model|not found|404|overloaded|529|rate limit|429/i.test(message)) {
+    return `Claude could not answer right now (${message.slice(0, 160)}). Try again in a moment.`;
+  }
+  return `Claude Code failed: ${message.slice(0, 240)}`;
 }
 
 function quoteForCmd(arg: string): string {
