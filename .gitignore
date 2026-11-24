@@ -1,4 +1,4 @@
-﻿node_modules/
+node_modules/
 out/
 dist/
 *.log
@@ -6,4 +6,8 @@ dist/
 .env.*
 .DS_Store
 Thumbs.db
-.claude/
+.claude/*
+!.claude/skills/
+!.claude/agents/
+/factory/jobs/
+/.worktrees/
